@@ -1,6 +1,6 @@
 //
 //  BYBOptoStimmerViewController.h
-//  RoboRoach
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/13/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -23,9 +23,9 @@
     - (IBAction)connectButtonClicked:(id)sender ;
     - (IBAction)favoritesClicked:(id)sender ;
     - (IBAction)startSession:(id)sender;
-    - (void) roboRoachHasChangedSettings:(BYBOptoStimmer *)roboRoach;
-    - (void) roboRoach: (BYBOptoStimmer *)roboRoach hasMovementCommand:(BYBMovementCommand) command;
-    - (void) didFinsihReadingRoboRoachValues;
+    - (void) optoStimmerHasChangedSettings:(BYBOptoStimmer *)optoStimmer;
+    - (void) optoStimmer: (BYBOptoStimmer *)optoStimmer hasMovementCommand:(BYBMovementCommand) command;
+    - (void) didFinsihReadingOptoStimmerValues;
     - (void) applySettings;
 @end
 

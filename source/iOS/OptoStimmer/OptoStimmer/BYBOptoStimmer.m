@@ -1,6 +1,6 @@
 //
-//  BYBRoboRoach.m
-//  RoboRoach
+//  BYBOptoStimmer.m
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/17/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -41,7 +41,7 @@ id <BYBOptoStimmerDelegate> delegate;
     NSLog(@"Duration: %@", self.duration);
     NSLog(@"Gain: %@", self.gain);
     self.gain = [NSNumber numberWithInt:100];
-    [delegate roboRoachHasChangedSettings:self];
+    [delegate optoStimmerHasChangedSettings:self];
 }
 
 - (NSString *) getStimulationString  {
@@ -58,8 +58,8 @@ id <BYBOptoStimmerDelegate> delegate;
     if (!turnCommandActive){
         if (!turnCommandActive){
             turnCommandActive = YES;
-            [self.delegate roboRoach:self hasMovementCommand: moveLeft];
-            [NSTimer scheduledTimerWithTimeInterval:ROBOROACH_TURN_TIMEOUT target:self selector:@selector(turnActiveTimer:) userInfo:nil repeats:NO];
+            [self.delegate optoStimmer:self hasMovementCommand: moveLeft];
+            [NSTimer scheduledTimerWithTimeInterval:OPTOSTIMMER_TURN_TIMEOUT target:self selector:@selector(turnActiveTimer:) userInfo:nil repeats:NO];
         }
     }
 }
@@ -68,8 +68,8 @@ id <BYBOptoStimmerDelegate> delegate;
     if (!turnCommandActive){
         if (!turnCommandActive){
             turnCommandActive = YES;
-            [self.delegate roboRoach:self hasMovementCommand: moveRight];
-            [NSTimer scheduledTimerWithTimeInterval:ROBOROACH_TURN_TIMEOUT target:self selector:@selector(turnActiveTimer:) userInfo:nil repeats:NO];
+            [self.delegate optoStimmer:self hasMovementCommand: moveRight];
+            [NSTimer scheduledTimerWithTimeInterval:OPTOSTIMMER_TURN_TIMEOUT target:self selector:@selector(turnActiveTimer:) userInfo:nil repeats:NO];
         }
     }
 }

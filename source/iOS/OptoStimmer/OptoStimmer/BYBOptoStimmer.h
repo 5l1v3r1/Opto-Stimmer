@@ -1,6 +1,6 @@
 //
-//  BYBRoboRoach.h
-//  RoboRoach
+//  BYBOptoStimmer.h
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/17/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 
 
-#define ROBOROACH_TURN_TIMEOUT 0.4
+#define OPTOSTIMMER_TURN_TIMEOUT 0.4
 
 typedef enum {
     moveLeft=1,
@@ -33,13 +33,13 @@ typedef enum {
 @property (nonatomic, copy) NSNumber *isLoadingParameters;
 
 
-//- (void) readSettingsFromRoboRoach;
+//- (void) readSettingsFromOptoStimmer;
 - (void) goLeft;
 - (void) goRight;
 - (void) updateSettings;
 - (NSString *) getStimulationString;
 
-//BYBRoboRoach Delegate
+//BYBOptoStimmer Delegate
 - (id)delegate;
 - (void)setDelegate:(id)newDelegate;
 
@@ -49,7 +49,7 @@ typedef enum {
 
 @protocol BYBOptoStimmerDelegate <NSObject>
 @required
-- (void) roboRoachHasChangedSettings:(BYBOptoStimmer *)roboRoach;
-- (void) roboRoach: (BYBOptoStimmer *)roboRoach hasMovementCommand:(BYBMovementCommand) command;
+- (void) optoStimmerHasChangedSettings:(BYBOptoStimmer *)optoStimmer;
+- (void) optoStimmer: (BYBOptoStimmer *)optoStimmer hasMovementCommand:(BYBMovementCommand) command;
 @end
 

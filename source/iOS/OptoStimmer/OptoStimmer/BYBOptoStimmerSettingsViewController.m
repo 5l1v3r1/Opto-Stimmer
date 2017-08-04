@@ -1,6 +1,6 @@
 //
-//  BYBRoboRoachSettingsViewController.m
-//  RoboRoach
+//  BYBOptoStimmerSettingsViewController.m
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/17/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -37,12 +37,12 @@
 {
     maxStimulationTime = 1000.0f;
     [super viewDidLoad];
-    if([self.roboRoach.firmwareVersion isEqualToString:@"1.0"])
+    if([self.optoStimmer.firmwareVersion isEqualToString:@"1.0"])
     {
         maxStimulationTime = 1000.0f;
         frequencyMinimumValue = 1.0f;
     }
-    else if ([self.roboRoach.firmwareVersion isEqualToString:@"0.81"] || [self.roboRoach.firmwareVersion isEqualToString:@"0.8"])
+    else if ([self.optoStimmer.firmwareVersion isEqualToString:@"0.81"] || [self.optoStimmer.firmwareVersion isEqualToString:@"0.8"])
     {
         maxStimulationTime = 2000.0f;
         frequencyMinimumValue = 0.5f;
@@ -55,15 +55,15 @@
     [UIApplication sharedApplication].statusBarHidden = YES;
     durationSlider.minimumValue = 10;
     durationSlider.maximumValue = maxStimulationTime;
-    [durationSlider setValue:[self.roboRoach.duration floatValue]];
+    [durationSlider setValue:[self.optoStimmer.duration floatValue]];
     
     freqSlider.minimumValue = frequencyMinimumValue;
     freqSlider.maximumValue = 125;
-    [freqSlider setValue:[self.roboRoach.frequency floatValue]];
+    [freqSlider setValue:[self.optoStimmer.frequency floatValue]];
 
     pulseWidthSlider.minimumValue = 1;
     pulseWidthSlider.maximumValue = 200;
-    [pulseWidthSlider setValue:[self.roboRoach.pulseWidth floatValue]];
+    [pulseWidthSlider setValue:[self.optoStimmer.pulseWidth floatValue]];
 
     [self updateSettingConstraints ];
     [self redrawStimulation];
@@ -205,7 +205,7 @@
     {
         
         [self.durationSlider setValue:[tempNumber floatValue]];
-         self.roboRoach.duration = [NSNumber numberWithFloat:[tempNumber floatValue]];
+         self.optoStimmer.duration = [NSNumber numberWithFloat:[tempNumber floatValue]];
     }
     else
     {
@@ -218,7 +218,7 @@
     {
         
         [self.freqSlider setValue:[tempNumber floatValue]];
-        self.roboRoach.frequency = [NSNumber numberWithFloat:[tempNumber floatValue]];
+        self.optoStimmer.frequency = [NSNumber numberWithFloat:[tempNumber floatValue]];
     }
     else
     {
@@ -230,7 +230,7 @@
     {
         
         [self.pulseWidthSlider setValue:[tempNumber floatValue]];
-        self.roboRoach.pulseWidth = [NSNumber numberWithFloat:[tempNumber floatValue]];
+        self.optoStimmer.pulseWidth = [NSNumber numberWithFloat:[tempNumber floatValue]];
     }
     else
     {
@@ -290,35 +290,35 @@
     CGContextSetLineWidth(context, 1.2f);
     CGContextMoveToPoint(context, 1.0f, 100.0f);
     CGContextAddLineToPoint(context, STIMLINE_OFFSET, STIMLINE_BASE);
-    //NSLog(@"self.roboRoach.numberOfPulses: %@", self.roboRoach.numberOfPulses);
+    //NSLog(@"self.optoStimmer.numberOfPulses: %@", self.optoStimmer.numberOfPulses);
     
     float pw;
-    if([self.roboRoach.pulseWidth floatValue]>[self.roboRoach.duration floatValue])
+    if([self.optoStimmer.pulseWidth floatValue]>[self.optoStimmer.duration floatValue])
     {
-        self.roboRoach.pulseWidth = self.roboRoach.duration;
+        self.optoStimmer.pulseWidth = self.optoStimmer.duration;
     }
 
-    pw  = [self.roboRoach.pulseWidth floatValue]/maxStimulationTime;
+    pw  = [self.optoStimmer.pulseWidth floatValue]/maxStimulationTime;
     
     float period;
-    if([self.roboRoach.frequency floatValue]<1.0f)
+    if([self.optoStimmer.frequency floatValue]<1.0f)
     {
-        period = (1.0/[self.roboRoach.frequency floatValue])*((float)(1000.0/maxStimulationTime));
+        period = (1.0/[self.optoStimmer.frequency floatValue])*((float)(1000.0/maxStimulationTime));
     }
     else
     {
-        period = (1.0/((float)[self.roboRoach.frequency intValue]))*((float)(1000.0/maxStimulationTime));
+        period = (1.0/((float)[self.optoStimmer.frequency intValue]))*((float)(1000.0/maxStimulationTime));
         
     }
     //NSLog(@"pw: %f", pw);
     //NSLog(@"period: %f", period);
     
     float x = STIMLINE_OFFSET;
-    float gain = [self.roboRoach.gain floatValue]/100.0;
+    float gain = [self.optoStimmer.gain floatValue]/100.0;
     
     float totalDuration = 0;
     
-    while( totalDuration < [self.roboRoach.duration floatValue]/maxStimulationTime)
+    while( totalDuration < [self.optoStimmer.duration floatValue]/maxStimulationTime)
     {
 
         totalDuration += period;
@@ -329,9 +329,9 @@
         //Go Over
         x += pw*POINTS_TO_SEC;
 
-        if(x>=(([self.roboRoach.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC + STIMLINE_OFFSET))
+        if(x>=(([self.optoStimmer.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC + STIMLINE_OFFSET))
         {
-             x =([self.roboRoach.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC +STIMLINE_OFFSET;
+             x =([self.optoStimmer.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC +STIMLINE_OFFSET;
             CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
             break;
         }
@@ -345,9 +345,9 @@
         //Go to end
 
         x += (period - pw)*POINTS_TO_SEC;
-       if(x>=(([self.roboRoach.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC + STIMLINE_OFFSET))
+       if(x>=(([self.optoStimmer.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC + STIMLINE_OFFSET))
         {
-            x =([self.roboRoach.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC +STIMLINE_OFFSET;
+            x =([self.optoStimmer.duration floatValue]/maxStimulationTime)*POINTS_TO_SEC +STIMLINE_OFFSET;
             CGContextAddLineToPoint(context, x, STIMLINE_BASE);
             break;
         }
@@ -360,18 +360,18 @@
     
     NSString *strDisplay;
     
-    if ( [self.roboRoach.randomMode boolValue]){
-        strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [Random] ", [self.roboRoach.duration intValue] ];
+    if ( [self.optoStimmer.randomMode boolValue]){
+        strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [Random] ", [self.optoStimmer.duration intValue] ];
     }
     else{
-        if([self.roboRoach.frequency floatValue]<1.0f)
+        if([self.optoStimmer.frequency floatValue]<1.0f)
         {
-            strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [%.01f Hz], Pulse = [%i ms] ", [self.roboRoach.duration intValue],[self.roboRoach.frequency floatValue], [self.roboRoach.pulseWidth intValue] ];
+            strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [%.01f Hz], Pulse = [%i ms] ", [self.optoStimmer.duration intValue],[self.optoStimmer.frequency floatValue], [self.optoStimmer.pulseWidth intValue] ];
             
         }
         else
         {
-            strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [%i Hz], Pulse = [%i ms] ", [self.roboRoach.duration intValue],[self.roboRoach.frequency intValue], [self.roboRoach.pulseWidth intValue] ];
+            strDisplay = [NSString stringWithFormat:@"Dur=[%i ms] Freq = [%i Hz], Pulse = [%i ms] ", [self.optoStimmer.duration intValue],[self.optoStimmer.frequency intValue], [self.optoStimmer.pulseWidth intValue] ];
         }
     }
     
@@ -399,41 +399,41 @@
     
     
     
-    float roundedGain = round([self.roboRoach.gain floatValue]/ 5.0f) * 5.0f;
-    self.roboRoach.gain = [NSNumber numberWithFloat:roundedGain];
+    float roundedGain = round([self.optoStimmer.gain floatValue]/ 5.0f) * 5.0f;
+    self.optoStimmer.gain = [NSNumber numberWithFloat:roundedGain];
     
-    float roundedDuration = round(([self.roboRoach.duration floatValue]/ 10.0f) * 10.0f);
-    self.roboRoach.duration = [NSNumber numberWithFloat:roundedDuration];
+    float roundedDuration = round(([self.optoStimmer.duration floatValue]/ 10.0f) * 10.0f);
+    self.optoStimmer.duration = [NSNumber numberWithFloat:roundedDuration];
     
     
-    if ([self.roboRoach.pulseWidth doubleValue] > 1000.0/[self.roboRoach.frequency doubleValue])
+    if ([self.optoStimmer.pulseWidth doubleValue] > 1000.0/[self.optoStimmer.frequency doubleValue])
     {
-        self.roboRoach.pulseWidth = [NSNumber numberWithDouble:(1000.0/[self.roboRoach.frequency doubleValue])];
+        self.optoStimmer.pulseWidth = [NSNumber numberWithDouble:(1000.0/[self.optoStimmer.frequency doubleValue])];
         
     }
     pulseWidthSlider.minimumValue = 1;
-    pulseWidthSlider.maximumValue = 1000.0/[self.roboRoach.frequency doubleValue];
-    if(pulseWidthSlider.maximumValue > [self.roboRoach.duration doubleValue])
+    pulseWidthSlider.maximumValue = 1000.0/[self.optoStimmer.frequency doubleValue];
+    if(pulseWidthSlider.maximumValue > [self.optoStimmer.duration doubleValue])
     {
-        pulseWidthSlider.maximumValue = [self.roboRoach.duration doubleValue];
+        pulseWidthSlider.maximumValue = [self.optoStimmer.duration doubleValue];
     }
 
     //NSLog(@"pulseWidthSlider.slider.maximumValue: %f", pulseWidthSlider.slider.maximumValue);
-    //NSLog(@"Num Pulses: %@", self.roboRoach.numberOfPulses);
-    [durationSlider setValue:[self.roboRoach.duration floatValue]];
-    [freqSlider setValue:[self.roboRoach.frequency floatValue]];
-    [pulseWidthSlider setValue:[self.roboRoach.pulseWidth floatValue]];
+    //NSLog(@"Num Pulses: %@", self.optoStimmer.numberOfPulses);
+    [durationSlider setValue:[self.optoStimmer.duration floatValue]];
+    [freqSlider setValue:[self.optoStimmer.frequency floatValue]];
+    [pulseWidthSlider setValue:[self.optoStimmer.pulseWidth floatValue]];
     
-    self.durationTI.text = [NSString stringWithFormat:@"%d",(int)[self.roboRoach.duration integerValue]];
-    if([self.roboRoach.frequency floatValue]<1.0f)
+    self.durationTI.text = [NSString stringWithFormat:@"%d",(int)[self.optoStimmer.duration integerValue]];
+    if([self.optoStimmer.frequency floatValue]<1.0f)
     {
-        self.frequencyTI.text = [NSString stringWithFormat:@"%.01f",[self.roboRoach.frequency floatValue]];
+        self.frequencyTI.text = [NSString stringWithFormat:@"%.01f",[self.optoStimmer.frequency floatValue]];
     }
     else
     {
-        self.frequencyTI.text = [NSString stringWithFormat:@"%d",(int)[self.roboRoach.frequency integerValue]];
+        self.frequencyTI.text = [NSString stringWithFormat:@"%d",(int)[self.optoStimmer.frequency integerValue]];
     }
-    self.pulseWidthTi.text = [NSString stringWithFormat:@"%d",(int)[self.roboRoach.pulseWidth integerValue]];
+    self.pulseWidthTi.text = [NSString stringWithFormat:@"%d",(int)[self.optoStimmer.pulseWidth integerValue]];
     [self redrawStimulation];
 
 }
@@ -444,8 +444,8 @@
     
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
 
-        NSLog(@"Save settings back to the RoboRoach!");
-        [self.roboRoach updateSettings];
+        NSLog(@"Save settings back to the OptoStimmer!");
+        [self.optoStimmer updateSettings];
     }
     [super viewWillDisappear:animated];
 }
@@ -463,27 +463,27 @@
 }
 - (IBAction)applyBtnClick:(id)sender {
     
-    [self.roboRoach updateSettings];
+    [self.optoStimmer updateSettings];
     [self.masterDelegate applySettings];
     
 }
 - (IBAction)pulseWidthChange:(id)sender {
     float tempFloat = self.pulseWidthSlider.value;
-    self.roboRoach.pulseWidth = [NSNumber numberWithFloat:tempFloat];
+    self.optoStimmer.pulseWidth = [NSNumber numberWithFloat:tempFloat];
     [self updateSettingConstraints];
     [self redrawStimulation];
 }
 
 - (IBAction)frequencyChanged:(id)sender {
     float tempFloat = self.freqSlider.value;
-    self.roboRoach.frequency = [NSNumber numberWithFloat:tempFloat];
+    self.optoStimmer.frequency = [NSNumber numberWithFloat:tempFloat];
     [self updateSettingConstraints];
     [self redrawStimulation];
 }
 
 - (IBAction)durationChanged:(id)sender {
     float tempFloat = self.durationSlider.value;
-    self.roboRoach.duration = [NSNumber numberWithFloat:tempFloat];
+    self.optoStimmer.duration = [NSNumber numberWithFloat:tempFloat];
     [self updateSettingConstraints];
     [self redrawStimulation];
 }

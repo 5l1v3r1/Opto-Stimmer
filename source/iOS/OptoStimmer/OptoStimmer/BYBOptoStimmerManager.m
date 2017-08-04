@@ -1,6 +1,6 @@
 //
-//  BYBRoboRoachManager.m
-//  RoboRoach
+//  BYBOptoStimmerManager.m
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/14/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -29,14 +29,14 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     return self;
 }
 
--(int) searchForRoboRoaches:(int) timeout{
+-(int) searchForOptoStimmeres:(int) timeout{
 
-    NSLog(@"searchForRoboRoaches() - Entered");
+    NSLog(@"searchForOptoStimmeres() - Entered");
     maximumSignalStrength = -10000;
     if (self.CM.state  != CBCentralManagerStatePoweredOn) {
-        NSLog(@"searchForRoboRoaches() - CoreBluetooth not correctly initialized !\r\n");
-        NSLog(@"searchForRoboRoaches() - State = %d (%s)\r\n",self.CM.state,[self centralManagerStateToString:self.CM.state]);
-        [[self delegate] didSearchForRoboRoaches:@[]];
+        NSLog(@"searchForOptoStimmeres() - CoreBluetooth not correctly initialized !\r\n");
+        NSLog(@"searchForOptoStimmeres() - State = %d (%s)\r\n",self.CM.state,[self centralManagerStateToString:self.CM.state]);
+        [[self delegate] didSearchForOptoStimmeres:@[]];
         [[self delegate] hadBluetoothError: self.CM.state];
         return -1;
     }
@@ -51,38 +51,38 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     //[self.CM scanForPeripheralsWithServices:@[su] options:0];
     [self.CM scanForPeripheralsWithServices:nil options:NULL];
     
-    NSLog(@"searchForRoboRoaches() - Scanning...");
+    NSLog(@"searchForOptoStimmeres() - Scanning...");
     [NSTimer scheduledTimerWithTimeInterval:(float)timeout target:self selector:@selector(scanTimer:) userInfo:nil repeats:NO];  //Set a timer to Turn Off
     
     return 0;
 }
 
 
--(int) connectToRoboRoach:(BYBOptoStimmer *) roboRoach{
-    self.activeRoboRoach = roboRoach;
-    [self connectPeripheral:self.activeRoboRoach.peripheral];
+-(int) connectToOptoStimmer:(BYBOptoStimmer *) optoStimmer{
+    self.activeOptoStimmer = optoStimmer;
+    [self connectPeripheral:self.activeOptoStimmer.peripheral];
     
     
-    //[self getAllServicesFromRoboRoach:self.activeRoboRoach.peripheral];
+    //[self getAllServicesFromOptoStimmer:self.activeOptoStimmer.peripheral];
     return 0;
 }
 
--(int) disconnectFromRoboRoach{
+-(int) disconnectFromOptoStimmer{
     
-    [self.CM cancelPeripheralConnection:self.activeRoboRoach.peripheral];
-    self.activeRoboRoach = nil;
+    [self.CM cancelPeripheralConnection:self.activeOptoStimmer.peripheral];
+    self.activeOptoStimmer = nil;
     
     return 0;
 }
 
--(void) sendMoveCommandToActiveRoboRoach: (BYBMovementCommand) command{
+-(void) sendMoveCommandToActiveOptoStimmer: (BYBMovementCommand) command{
     switch (command) {
             char c  = 0x01;
         case moveLeft:
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_STIM_LEFT_UUID data:[NSData dataWithBytes: &c length: sizeof(c)]];
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_STIM_LEFT_UUID data:[NSData dataWithBytes: &c length: sizeof(c)]];
             break;
         case moveRight:
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_STIM_RIGHT_UUID data:[NSData dataWithBytes: &c length: sizeof(c)]];
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_STIM_RIGHT_UUID data:[NSData dataWithBytes: &c length: sizeof(c)]];
             break;
             
         default:
@@ -98,76 +98,76 @@ id <BYBOptoStimmerManagerDelegate> delegate;
 // one unit of pulse width equals (100/255)% of period of impuls
 // one unit of duration equals 8ms
 //
--(void) sendUpdatedSettingsToActiveRoboRoach {
+-(void) sendUpdatedSettingsToActiveOptoStimmer {
     
     UInt8 data;
     
     //Units are converted for sending it over BT so that it fits in one byte per parameter
     
     
-    if([self.activeRoboRoach.firmwareVersion isEqualToString:@"0.81"] || [self.activeRoboRoach.firmwareVersion isEqualToString:@"0.8"])
+    if([self.activeOptoStimmer.firmwareVersion isEqualToString:@"0.81"] || [self.activeOptoStimmer.firmwareVersion isEqualToString:@"0.8"])
     {
     
             //One unit of frequency equals 0.5Hz
-            if(self.activeRoboRoach.frequency.floatValue<1.0f)
+            if(self.activeOptoStimmer.frequency.floatValue<1.0f)
             {
-                data = (UInt8)roundf((self.activeRoboRoach.frequency.floatValue*2.0f));
+                data = (UInt8)roundf((self.activeOptoStimmer.frequency.floatValue*2.0f));
             }
             else
             {
-                data = (UInt8)roundf((self.activeRoboRoach.frequency.intValue*2.0f));
+                data = (UInt8)roundf((self.activeOptoStimmer.frequency.intValue*2.0f));
             }
             if(data<1)
             {
                 data  = 1;
             }
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
 
             //one unit of pulse width equals (100/255)% of period of impuls
-           // data = (int)(255.0 * (self.activeRoboRoach.pulseWidth.floatValue/(1000.0/self.activeRoboRoach.frequency.floatValue)));
-            data = (UInt8)(self.activeRoboRoach.pulseWidth.unsignedIntValue & 0xFF);
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+           // data = (int)(255.0 * (self.activeOptoStimmer.pulseWidth.floatValue/(1000.0/self.activeOptoStimmer.frequency.floatValue)));
+            data = (UInt8)(self.activeOptoStimmer.pulseWidth.unsignedIntValue & 0xFF);
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
 
             //one unit of duration equals 8ms
-            data = self.activeRoboRoach.duration.integerValue/8; //Note we need to divide by 8ms.
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+            data = self.activeOptoStimmer.duration.integerValue/8; //Note we need to divide by 8ms.
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
             
-            data = self.activeRoboRoach.randomMode.integerValue;
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+            data = self.activeOptoStimmer.randomMode.integerValue;
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
             
-            data = self.activeRoboRoach.gain.unsignedIntegerValue;
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+            data = self.activeOptoStimmer.gain.unsignedIntegerValue;
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
             
             
-            uint pulseWidthTemp = self.activeRoboRoach.pulseWidth.unsignedIntValue;
+            uint pulseWidthTemp = self.activeOptoStimmer.pulseWidth.unsignedIntValue;
             data = (UInt8)((pulseWidthTemp >> 8) & 0xFF);
-            [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSE_WIDTH_SEC_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+            [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSE_WIDTH_SEC_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
     }
-    else if([self.activeRoboRoach.firmwareVersion isEqualToString:@"1.0"])
+    else if([self.activeOptoStimmer.firmwareVersion isEqualToString:@"1.0"])
     {
         //One unit of frequency equals 0.5Hz
 
-        data = (UInt8)self.activeRoboRoach.frequency.intValue;
+        data = (UInt8)self.activeOptoStimmer.frequency.intValue;
         
         if(data<1)
         {
             data  = 1;
         }
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
 
-        data = (UInt8)(self.activeRoboRoach.pulseWidth.unsignedIntValue);
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = (UInt8)(self.activeOptoStimmer.pulseWidth.unsignedIntValue);
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
         //one unit of duration equals 8ms
-        data = self.activeRoboRoach.duration.unsignedIntValue/5; //Note we need to divide by 8ms.
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.duration.unsignedIntValue/5; //Note we need to divide by 8ms.
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
-        data = self.activeRoboRoach.randomMode.integerValue;
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.randomMode.integerValue;
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
-        data = self.activeRoboRoach.gain.unsignedIntegerValue;
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.gain.unsignedIntegerValue;
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
     }
     else
     {
@@ -179,39 +179,39 @@ id <BYBOptoStimmerManagerDelegate> delegate;
         
         
         //One unit of frequency equals 0.5Hz
-        if(self.activeRoboRoach.frequency.floatValue<1.0f)
+        if(self.activeOptoStimmer.frequency.floatValue<1.0f)
         {
-            data = (UInt8)roundf((self.activeRoboRoach.frequency.floatValue*2.0f));
+            data = (UInt8)roundf((self.activeOptoStimmer.frequency.floatValue*2.0f));
         }
         else
         {
-            data = (UInt8)roundf((self.activeRoboRoach.frequency.intValue*2.0f));
+            data = (UInt8)roundf((self.activeOptoStimmer.frequency.intValue*2.0f));
         }
         if(data<1)
         {
             data  = 1;
         }
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
         //one unit of pulse width equals (100/255)% of period of impuls
-        // data = (int)(255.0 * (self.activeRoboRoach.pulseWidth.floatValue/(1000.0/self.activeRoboRoach.frequency.floatValue)));
-        data = (UInt8)(self.activeRoboRoach.pulseWidth.unsignedIntValue & 0xFF);
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        // data = (int)(255.0 * (self.activeOptoStimmer.pulseWidth.floatValue/(1000.0/self.activeOptoStimmer.frequency.floatValue)));
+        data = (UInt8)(self.activeOptoStimmer.pulseWidth.unsignedIntValue & 0xFF);
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
         //one unit of duration equals 8ms
-        data = self.activeRoboRoach.duration.integerValue/8; //Note we need to divide by 8ms.
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.duration.integerValue/8; //Note we need to divide by 8ms.
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
-        data = self.activeRoboRoach.randomMode.integerValue;
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.randomMode.integerValue;
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
-        data = self.activeRoboRoach.gain.unsignedIntegerValue;
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        data = self.activeOptoStimmer.gain.unsignedIntegerValue;
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
         
-        uint pulseWidthTemp = self.activeRoboRoach.pulseWidth.unsignedIntValue;
+        uint pulseWidthTemp = self.activeOptoStimmer.pulseWidth.unsignedIntValue;
         data = (UInt8)((pulseWidthTemp >> 8) & 0xFF);
-        [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSE_WIDTH_SEC_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+        [self writeValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSE_WIDTH_SEC_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
         
         
         
@@ -223,13 +223,13 @@ id <BYBOptoStimmerManagerDelegate> delegate;
 
 }
 
--(void) getAllServicesFromRoboRoach:(CBPeripheral *)p{
-    NSLog(@"Entering getAllServicesFromRoboRoach");
+-(void) getAllServicesFromOptoStimmer:(CBPeripheral *)p{
+    NSLog(@"Entering getAllServicesFromOptoStimmer");
     [p discoverServices:nil]; // Discover all services without filter
 }
 
--(void) getAllCharacteristicsFromRoboRoach:(CBPeripheral *)p{
-    NSLog(@"Entering getAllCharacteristicsFromRoboRoach");
+-(void) getAllCharacteristicsFromOptoStimmer:(CBPeripheral *)p{
+    NSLog(@"Entering getAllCharacteristicsFromOptoStimmer");
     
     for (int i=0; i < p.services.count; i++) {
         CBService *s = [p.services objectAtIndex:i];
@@ -242,9 +242,9 @@ id <BYBOptoStimmerManagerDelegate> delegate;
 - (void) connectPeripheral:(CBPeripheral *)peripheral {
     NSLog(@"Entering connectPeripheral(UUID : %s)",[self UUIDToString:peripheral.identifier]);
     
-    self.activeRoboRoach.peripheral = peripheral;
-    self.activeRoboRoach.peripheral.delegate = self;
-    [self.CM connectPeripheral:self.activeRoboRoach.peripheral options:nil];
+    self.activeOptoStimmer.peripheral = peripheral;
+    self.activeOptoStimmer.peripheral.delegate = self;
+    [self.CM connectPeripheral:self.activeOptoStimmer.peripheral options:nil];
     
 }
 
@@ -257,10 +257,10 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     if ([_peripherals count] > 0 ){
         BYBOptoStimmer * r = [[BYBOptoStimmer alloc] init];
         r.peripheral = _peripherals[0];
-        [[self delegate] didSearchForRoboRoaches:@[r]];
+        [[self delegate] didSearchForOptoStimmeres:@[r]];
     }
     else{
-        [[self delegate] didSearchForRoboRoaches:@[]];
+        [[self delegate] didSearchForOptoStimmeres:@[]];
     }
     
 }
@@ -273,20 +273,20 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     NSData *cd = [[NSData alloc] initWithBytes:(char *)&c length:2];
     CBUUID *su = [CBUUID UUIDWithData:sd];
     CBUUID *cu = [CBUUID UUIDWithData:cd];
-    CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
+    CBService *service = [self findServiceFromUUID:su p:self.activeOptoStimmer.peripheral];
     if (!service) {
-        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     
     if (!characteristic) {
-        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
     
     NSLog(@"Reading characteristic %s on service %s",[self CBUUIDToString:cu], [self CBUUIDToString:su]);
-    [self.activeRoboRoach.peripheral readValueForCharacteristic:characteristic];
+    [self.activeOptoStimmer.peripheral readValueForCharacteristic:characteristic];
 }
 
 -(void) writeValue:(int)serviceUUID characteristicUUID:(int)characteristicUUID  data:(NSData *)data {
@@ -301,18 +301,18 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     NSData *cd = [[NSData alloc] initWithBytes:(char *)&c length:2];
     CBUUID *su = [CBUUID UUIDWithData:sd];
     CBUUID *cu = [CBUUID UUIDWithData:cd];
-    CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
+    CBService *service = [self findServiceFromUUID:su p:self.activeOptoStimmer.peripheral];
     if (!service) {
-        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     if (!characteristic) {
-        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
      NSLog(@"Writing [%i] characteristic %s on service %s", bdata, [self CBUUIDToString:cu], [self CBUUIDToString:su]);
-    [self.activeRoboRoach.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+    [self.activeOptoStimmer.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
 }
 
 -(void) notification:(int)serviceUUID characteristicUUID:(int)characteristicUUID on:(BOOL)on {
@@ -323,17 +323,17 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     NSData *cd = [[NSData alloc] initWithBytes:(char *)&c length:2];
     CBUUID *su = [CBUUID UUIDWithData:sd];
     CBUUID *cu = [CBUUID UUIDWithData:cd];
-    CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
+    CBService *service = [self findServiceFromUUID:su p:self.activeOptoStimmer.peripheral];
     if (!service) {
-        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     if (!characteristic) {
-        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.identifier]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeOptoStimmer.peripheral.identifier]);
         return;
     }
-    [self.activeRoboRoach.peripheral setNotifyValue:on forCharacteristic:characteristic];
+    [self.activeOptoStimmer.peripheral setNotifyValue:on forCharacteristic:characteristic];
 }
 
 //-------------------------------------------------------------------------
@@ -368,7 +368,7 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     {
         if ([nameString rangeOfString:@"OptoStimmer"].location != NSNotFound) {
 
-            NSLog(@"Found RoboRoach!...\n");
+            NSLog(@"Found OptoStimmer!...\n");
             NSLog(@"Signal strength: %ld\n",[RSSI longValue]);
             if([RSSI longValue]>maximumSignalStrength)
             {
@@ -395,7 +395,7 @@ id <BYBOptoStimmerManagerDelegate> delegate;
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
     NSLog(@"[CM] didDisconnectPeripheral");
     self.peripherals = nil;
-    [[self delegate] didDisconnectFromRoboRoach]; //Let the UI Know it was successful.
+    [[self delegate] didDisconnectFromOptoStimmer]; //Let the UI Know it was successful.
 }
 
 
@@ -411,46 +411,46 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     UInt16 characteristicUUID = [self CBUUIDToInt:characteristic.UUID];
     if (!error) {
         switch(characteristicUUID){
-            case BYB_ROBOROACH_CHAR_FREQUENCY_UUID:
+            case BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
                  NSNumber *numberFreq = [NSNumber numberWithUnsignedChar:(unsigned char)value];
                 
-                //self.activeRoboRoach.frequency = [NSNumber numberWithFloat:[numberFreq floatValue]*0.5f];
+                //self.activeOptoStimmer.frequency = [NSNumber numberWithFloat:[numberFreq floatValue]*0.5f];
                 tempFrequency = [numberFreq floatValue];
-                //NSLog(@"[peripheral] didUpdateValueForChar Freq (%s, %@)", [self CBUUIDToString:characteristic.UUID], self.activeRoboRoach.frequency);
+                //NSLog(@"[peripheral] didUpdateValueForChar Freq (%s, %@)", [self CBUUIDToString:characteristic.UUID], self.activeOptoStimmer.frequency);
                 break;
             }
 
-            case BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID:
+            case BYB_OPTOSTIMMER_CHAR_DURATION_IN_5MS_INTERVALS_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
                 NSNumber *numberOf5msSteps = [NSNumber numberWithUnsignedChar:(unsigned char)value];
                 tempDuration = [numberOf5msSteps floatValue];
-               // self.activeRoboRoach.duration = [NSNumber numberWithInt:[numberOf5msSteps intValue] * 8]; //Note: in 5ms steps.
-               // NSLog(@"[peripheral] didUpdateValueForChar Duration (%s, %@ *8ms = %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value], self.activeRoboRoach.duration);
+               // self.activeOptoStimmer.duration = [NSNumber numberWithInt:[numberOf5msSteps intValue] * 8]; //Note: in 5ms steps.
+               // NSLog(@"[peripheral] didUpdateValueForChar Duration (%s, %@ *8ms = %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value], self.activeOptoStimmer.duration);
                 break;
             }
-            case BYB_ROBOROACH_CHAR_RANDOMMODE_UUID:
+            case BYB_OPTOSTIMMER_CHAR_RANDOMMODE_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.randomMode = [NSNumber numberWithBool:(bool)value];
-                //[[self delegate] didFinsihReadingRoboRoachValues];
+                self.activeOptoStimmer.randomMode = [NSNumber numberWithBool:(bool)value];
+                //[[self delegate] didFinsihReadingOptoStimmerValues];
                 NSLog(@"[peripheral] didUpdateValueForChar Rand (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithInt:(int)value]);
                 break;
             }
-            case BYB_ROBOROACH_CHAR_GAIN_UUID:
+            case BYB_OPTOSTIMMER_CHAR_GAIN_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.gain = [NSNumber numberWithUnsignedChar:(unsigned char)value];
+                self.activeOptoStimmer.gain = [NSNumber numberWithUnsignedChar:(unsigned char)value];
                 NSLog(@"[peripheral] didUpdateValueForChar Gain (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
-            case BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID:
+            case BYB_OPTOSTIMMER_CHAR_PULSEWIDTH_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
@@ -458,16 +458,16 @@ id <BYBOptoStimmerManagerDelegate> delegate;
                 tempPulseWidthFirst = (UInt8)[numberPulseWidth unsignedIntValue];
                /* UInt16 tempNewValue = (UInt8)[numberPulseWidth unsignedIntValue];
                 
-                uint tempPulseWidth = self.activeRoboRoach.pulseWidth.unsignedIntValue;
+                uint tempPulseWidth = self.activeOptoStimmer.pulseWidth.unsignedIntValue;
                 
                 UInt16 resultantPulseWidth = (tempPulseWidth & 0xFF00) | tempNewValue;
                 
-                self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedInteger:resultantPulseWidth];
-                NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)  (freq: %@)", [self CBUUIDToString:characteristic.UUID], self.activeRoboRoach.pulseWidth,self.activeRoboRoach.frequency );
+                self.activeOptoStimmer.pulseWidth = [NSNumber numberWithUnsignedInteger:resultantPulseWidth];
+                NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)  (freq: %@)", [self CBUUIDToString:characteristic.UUID], self.activeOptoStimmer.pulseWidth,self.activeOptoStimmer.frequency );
                 */
                 break;
             }
-            case BYB_ROBOROACH_CHAR_PULSE_WIDTH_SEC_UUID:
+            case BYB_OPTOSTIMMER_CHAR_PULSE_WIDTH_SEC_UUID:
             {
             
                 char value;
@@ -477,12 +477,12 @@ id <BYBOptoStimmerManagerDelegate> delegate;
                 tempPulseWidthSecond = (UInt8)[numberPulseWidth unsignedIntValue];
               /*  UInt16 tempNewValue = (UInt8)[numberPulseWidth unsignedIntValue];
                 
-                uint tempPulseWidth = self.activeRoboRoach.pulseWidth.unsignedIntValue;
+                uint tempPulseWidth = self.activeOptoStimmer.pulseWidth.unsignedIntValue;
             
                 UInt16 resultantPulseWidth = (tempPulseWidth & 0x00FF) | (tempNewValue<<8);
             
-                self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedInteger:resultantPulseWidth];
-                NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)  (freq: %@)", [self CBUUIDToString:characteristic.UUID], self.activeRoboRoach.pulseWidth,self.activeRoboRoach.frequency );
+                self.activeOptoStimmer.pulseWidth = [NSNumber numberWithUnsignedInteger:resultantPulseWidth];
+                NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)  (freq: %@)", [self CBUUIDToString:characteristic.UUID], self.activeOptoStimmer.pulseWidth,self.activeOptoStimmer.frequency );
                 */
                 break;
             }
@@ -490,7 +490,7 @@ id <BYBOptoStimmerManagerDelegate> delegate;
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.batteryLevel = [NSNumber numberWithInt:(int)value];
+                self.activeOptoStimmer.batteryLevel = [NSNumber numberWithInt:(int)value];
                 break;
             }
             case DEVICE_INFO_CHAR_FIRMWARE_UUID:
@@ -499,19 +499,19 @@ id <BYBOptoStimmerManagerDelegate> delegate;
                 //char *value = (char *)malloc((10)*sizeof(char));
                 //[characteristic.value getBytes:&value length:];
                 NSString *fwString = [[NSString alloc] initWithData:characteristic.value encoding:NSASCIIStringEncoding];
-                self.activeRoboRoach.firmwareVersion = [fwString stringByTrimmingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];//[NSString stringWithUTF8String:value];
+                self.activeOptoStimmer.firmwareVersion = [fwString stringByTrimmingCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];//[NSString stringWithUTF8String:value];
                 [self recalculateParametersBasedOnFirmware];
-                NSLog(@"Firmware version: %@", self.activeRoboRoach.firmwareVersion);
+                NSLog(@"Firmware version: %@", self.activeOptoStimmer.firmwareVersion);
                 break;
             }
             case DEVICE_INFO_CHAR_HARDWARE_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:10];
-                self.activeRoboRoach.hardwareVersion = [NSString
+                self.activeOptoStimmer.hardwareVersion = [NSString
                     stringWithUTF8String:&value];
                 
-                [[self delegate] didFinsihReadingRoboRoachValues];
+                [[self delegate] didFinsihReadingOptoStimmerValues];
                 break;
             }
                 
@@ -526,24 +526,24 @@ id <BYBOptoStimmerManagerDelegate> delegate;
 - (void) recalculateParametersBasedOnFirmware
 {
     NSLog(@"Recalculate Parameters based on firmware\n");
-    if([self.activeRoboRoach.firmwareVersion  isEqualToString:@"0.81"] || [self.activeRoboRoach.firmwareVersion  isEqualToString:@"0.8"])
+    if([self.activeOptoStimmer.firmwareVersion  isEqualToString:@"0.81"] || [self.activeOptoStimmer.firmwareVersion  isEqualToString:@"0.8"])
     {//2 sec max and pulse width encoded with 2 bytes
-        self.activeRoboRoach.frequency = [NSNumber numberWithFloat:tempFrequency*0.5f];
-        self.activeRoboRoach.duration = [NSNumber numberWithInt:(int)(tempDuration * 8)];
-        self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedInteger:(tempPulseWidthFirst & 0x00FF) | (tempPulseWidthSecond<<8)];
+        self.activeOptoStimmer.frequency = [NSNumber numberWithFloat:tempFrequency*0.5f];
+        self.activeOptoStimmer.duration = [NSNumber numberWithInt:(int)(tempDuration * 8)];
+        self.activeOptoStimmer.pulseWidth = [NSNumber numberWithUnsignedInteger:(tempPulseWidthFirst & 0x00FF) | (tempPulseWidthSecond<<8)];
     }
-    else if([self.activeRoboRoach.firmwareVersion isEqualToString:@"1.0"])
+    else if([self.activeOptoStimmer.firmwareVersion isEqualToString:@"1.0"])
     {//old one with pulse width that works 1-255
-        self.activeRoboRoach.frequency = [NSNumber numberWithFloat:tempFrequency];
-        self.activeRoboRoach.duration = [NSNumber numberWithInt:(int)(tempDuration * 5)];
-        self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedInteger:tempPulseWidthFirst];
+        self.activeOptoStimmer.frequency = [NSNumber numberWithFloat:tempFrequency];
+        self.activeOptoStimmer.duration = [NSNumber numberWithInt:(int)(tempDuration * 5)];
+        self.activeOptoStimmer.pulseWidth = [NSNumber numberWithUnsignedInteger:tempPulseWidthFirst];
     }
     else
     {//all other. Not recognized.
         //Use newest configuration
-        self.activeRoboRoach.frequency = [NSNumber numberWithFloat:tempFrequency*0.5f];
-        self.activeRoboRoach.duration = [NSNumber numberWithInt:(int)(tempDuration * 8)];
-        self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedInteger:(tempPulseWidthFirst & 0x00FF) | (tempPulseWidthSecond<<8)];
+        self.activeOptoStimmer.frequency = [NSNumber numberWithFloat:tempFrequency*0.5f];
+        self.activeOptoStimmer.duration = [NSNumber numberWithInt:(int)(tempDuration * 8)];
+        self.activeOptoStimmer.pulseWidth = [NSNumber numberWithUnsignedInteger:(tempPulseWidthFirst & 0x00FF) | (tempPulseWidthSecond<<8)];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unrecognized hardver version"
                                                         message:@"We can't recognize hardware version of OptoStimmer. Please update application and try to connect again."
@@ -560,7 +560,7 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     NSLog(@"[peripheral] didDiscoverServices()");
     if (!error) {
         NSLog(@"Services of peripheral with UUID : %s found\r\n",[self UUIDToString:peripheral.identifier]);
-        [self getAllCharacteristicsFromRoboRoach:peripheral];
+        [self getAllCharacteristicsFromOptoStimmer:peripheral];
     }
     else {
         NSLog(@"Service discovery was unsuccessfull !\r\n");
@@ -579,23 +579,23 @@ id <BYBOptoStimmerManagerDelegate> delegate;
                 //[[self delegate] keyfobReady];
                 NSLog(@"Finished discovering characteristics");
                 
-                //[self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID];
-                if ( !self.activeRoboRoach.isLoadingParameters ){
-                    self.activeRoboRoach.isLoadingParameters = @1;
+                //[self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID];
+                if ( !self.activeOptoStimmer.isLoadingParameters ){
+                    self.activeOptoStimmer.isLoadingParameters = @1;
                     
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSE_WIDTH_SEC_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_FREQUENCY_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSEWIDTH_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_PULSE_WIDTH_SEC_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_DURATION_IN_5MS_INTERVALS_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_RANDOMMODE_UUID];
+                    [self readValue:BYB_OPTOSTIMMER_SERVICE_UUID characteristicUUID:BYB_OPTOSTIMMER_CHAR_GAIN_UUID];
                     [self readValue:BATTERY_SERVICE_UUID characteristicUUID:
                         BATTERY_CHAR_BATTERYLEVEL_UUID];
                     [self readValue:DEVICE_INFO_SERVICE_UUID characteristicUUID:
                         DEVICE_INFO_CHAR_FIRMWARE_UUID];
                     [self readValue:DEVICE_INFO_SERVICE_UUID characteristicUUID:
                         DEVICE_INFO_CHAR_HARDWARE_UUID];
-                    [self.delegate roboRoachReady];
+                    [self.delegate optoStimmerReady];
                 }
             }
         }
@@ -713,7 +713,7 @@ id <BYBOptoStimmerManagerDelegate> delegate;
     {
         //CBPeripheral *p = [self->_peripherals objectAtIndex:i];
         
-        //[GJG to Fix] CFUUIDCreateString crashes on new RoboRoaches.???
+        //[GJG to Fix] CFUUIDCreateString crashes on new OptoStimmeres.???
         
         //CFStringRef s = CFUUIDCreateString(NULL, p.UUID);
         //NSLog(@"%d  |  %s\n",i,CFStringGetCStringPtr(s, 0));

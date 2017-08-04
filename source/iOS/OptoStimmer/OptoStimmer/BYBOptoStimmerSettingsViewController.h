@@ -1,13 +1,12 @@
 //
-//  BYBRoboRoachSettingsViewController.h
-//  RoboRoach
+//  BYBOptoStimmerSettingsViewController.h
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/17/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-//#import <SensibleTableView/SCTableViewModel.h>
 #import "BYBOptoStimmerManager.h"
 #import "OBSlider.h"
 @protocol BYBSettingsDelegate;
@@ -29,7 +28,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *pulseWidthTi;
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollViewBackground;
 
-@property (strong, nonatomic) BYBOptoStimmer * roboRoach;
+@property (strong, nonatomic) BYBOptoStimmer * optoStimmer;
 - (IBAction)applyBtnClick:(id)sender;
 
 @property (nonatomic, assign) id <BYBSettingsDelegate> masterDelegate;

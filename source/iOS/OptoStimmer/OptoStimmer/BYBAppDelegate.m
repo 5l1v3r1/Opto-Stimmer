@@ -1,6 +1,6 @@
 //
 //  BYBAppDelegate.m
-//  RoboRoach
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/13/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.

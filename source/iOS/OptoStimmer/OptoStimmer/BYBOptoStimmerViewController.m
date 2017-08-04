@@ -1,6 +1,6 @@
 //
 //  BYBOptoStimmerViewController.m
-//  RoboRoach
+//  OptoStimmer
 //
 //  Created by Greg Gage on 4/13/13.
 //  Copyright (c) 2013 Backyard Brains. All rights reserved.
@@ -42,7 +42,7 @@
     float sWidth;
     float sHeight;
     
-    BYBOptoStimmerManager * rr; //RoboRoach class (private)
+    BYBOptoStimmerManager * rr; //OptoStimmer class (private)
     
     UIButton * recordBTN;
     UIButton * stimulateBTN;
@@ -244,7 +244,7 @@ BOOL isConnected = NO;
     recordingStarted = NO;
     
     rr = [[BYBOptoStimmerManager alloc] init];   // Init BYBOptoStimmerManager class.
-    rr.delegate = self;  //Start recieveing RoboRoach updates
+    rr.delegate = self;  //Start recieveing OptoStimmer updates
     
     [self setupControlls];
 
@@ -411,7 +411,7 @@ BOOL isConnected = NO;
     //Open config screen
     UIStoryboard *storyBoard = self.storyboard;
     BYBOptoStimmerSettingsViewController *viewController = [storyBoard instantiateViewControllerWithIdentifier:@"BYBOptoStimmerSettingsViewController"];
-    viewController.roboRoach = rr.activeRoboRoach;
+    viewController.optoStimmer = rr.activeOptoStimmer;
     viewController.masterDelegate = self;
    // self.cameraUI.cameraOverlayView = viewController.view;
     
@@ -433,18 +433,18 @@ BOOL isConnected = NO;
 
 -(void) updateTextForParametersLabels
 {
-    if(rr.activeRoboRoach.pulseWidth)
+    if(rr.activeOptoStimmer.pulseWidth)
     {
-        widthLabel.text =[NSString stringWithFormat:@"Pulse: %d ms",[rr.activeRoboRoach.pulseWidth intValue]];
-        durationLabel.text = [NSString stringWithFormat:@"Dur: %d ms",[rr.activeRoboRoach.duration intValue]];
+        widthLabel.text =[NSString stringWithFormat:@"Pulse: %d ms",[rr.activeOptoStimmer.pulseWidth intValue]];
+        durationLabel.text = [NSString stringWithFormat:@"Dur: %d ms",[rr.activeOptoStimmer.duration intValue]];
         
-        if([rr.activeRoboRoach.frequency floatValue]<1.0f)
+        if([rr.activeOptoStimmer.frequency floatValue]<1.0f)
         {
-            freqLabel.text = [NSString stringWithFormat:@"Freq: %.01f Hz",[rr.activeRoboRoach.frequency floatValue]];
+            freqLabel.text = [NSString stringWithFormat:@"Freq: %.01f Hz",[rr.activeOptoStimmer.frequency floatValue]];
         }
         else
         {
-           freqLabel.text = [NSString stringWithFormat:@"Freq: %i Hz",[rr.activeRoboRoach.frequency intValue]];
+           freqLabel.text = [NSString stringWithFormat:@"Freq: %i Hz",[rr.activeOptoStimmer.frequency intValue]];
         }
 
         widthLabel.hidden = NO;
@@ -468,7 +468,7 @@ BOOL isConnected = NO;
 #if TARGET_IPHONE_SIMULATOR
     
     NSLog(@"Running in Simulator");
-    [self didConnectToRoboRoach:YES];
+    [self didConnectToOptoStimmer:YES];
     [self configurationBTNHandler:nil];
     
 #else
@@ -479,12 +479,12 @@ BOOL isConnected = NO;
         
         [connectBTN setEnabled:NO];
         
-        [rr searchForRoboRoaches:4];
+        [rr searchForOptoStimmeres:4];
         
     }else{
         //currentState = STATE_DISCONNECTED;
         currentState = STATE_CONNECTING;
-        [rr disconnectFromRoboRoach];
+        [rr disconnectFromOptoStimmer];
         isConnected = NO;
     }
     [self refreshViewState];
@@ -558,7 +558,7 @@ BOOL isConnected = NO;
 {
     if ( isConnected ) {
         NSLog(@"Stimulate");
-        [rr.activeRoboRoach goRight ];
+        [rr.activeOptoStimmer goRight ];
         stimulationTime = [NSDate date];
        // videoCamera.frameRate = 120;
        // [self performSelector:@selector(resetFrameRate) withObject:nil afterDelay:1.0];
@@ -631,27 +631,27 @@ BOOL isConnected = NO;
 
 
 
-- (void) didFinsihReadingRoboRoachValues {
-    NSLog(@"didFinsihReadingRoboRoachValues");
+- (void) didFinsihReadingOptoStimmerValues {
+    NSLog(@"didFinsihReadingOptoStimmerValues");
     
-    [stimulationSettings setText:[rr.activeRoboRoach getStimulationString]];
+    [stimulationSettings setText:[rr.activeOptoStimmer getStimulationString]];
     [stimulationSettings setHidden:NO];
     
     [batteryImage setAlpha:1];
     
-    if ([rr.activeRoboRoach.batteryLevel integerValue] > 90)
+    if ([rr.activeOptoStimmer.batteryLevel integerValue] > 90)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-95.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 80)
+    }else if ([rr.activeOptoStimmer.batteryLevel integerValue] > 80)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-90.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 70)
+    }else if ([rr.activeOptoStimmer.batteryLevel integerValue] > 70)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-80.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 60)
+    }else if ([rr.activeOptoStimmer.batteryLevel integerValue] > 60)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-50.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 50)
+    }else if ([rr.activeOptoStimmer.batteryLevel integerValue] > 50)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-25.png"];
     }else{
@@ -660,19 +660,19 @@ BOOL isConnected = NO;
     
     
     [self loadSettingsFromUserDefaults];
-    //[rr sendUpdatedSettingsToActiveRoboRoach];
-    [self roboRoachHasChangedSettings:rr.activeRoboRoach];
+    //[rr sendUpdatedSettingsToActiveOptoStimmer];
+    [self optoStimmerHasChangedSettings:rr.activeOptoStimmer];
     
 }
 
 
-- (void) didSearchForRoboRoaches: (NSArray*)foundRoboRoaches{
-    NSLog(@"didSearchForRoboRoaches:foundRoboRoaches[%i]",foundRoboRoaches.count);
+- (void) didSearchForOptoStimmeres: (NSArray*)foundOptoStimmeres{
+    NSLog(@"didSearchForOptoStimmeres:foundOptoStimmeres[%i]",foundOptoStimmeres.count);
     
     [spinner setHidden:YES];
     [spinner stopAnimating];
     
-    if (foundRoboRoaches.count > 0 ){
+    if (foundOptoStimmeres.count > 0 ){
         /*[backpackImage setAlpha:0.25];
          [backpackImage setHidden:NO];
          [batteryImage setAlpha:0.25];
@@ -682,18 +682,18 @@ BOOL isConnected = NO;
         [connectButton setEnabled:NO];
         
         
-        //Select the first RoboRoach
-        [rr connectToRoboRoach:foundRoboRoaches[0]];
+        //Select the first OptoStimmer
+        [rr connectToOptoStimmer:foundOptoStimmeres[0]];
         
     }
     else{
-        [self didDisconnectFromRoboRoach];
+        [self didDisconnectFromOptoStimmer];
     }
     
 }
 
-- (void) didDisconnectFromRoboRoach {
-    NSLog(@"didDisconnectFromRoboRoach");
+- (void) didDisconnectFromOptoStimmer {
+    NSLog(@"didDisconnectFromOptoStimmer");
     isConnected = NO;
     
     
@@ -707,8 +707,8 @@ BOOL isConnected = NO;
     
 }
 
-- (void) roboRoachReady {
-    NSLog(@"roboRoachReady");
+- (void) optoStimmerReady {
+    NSLog(@"optoStimmerReady");
     
     isConnected = YES;
     
@@ -760,9 +760,9 @@ BOOL isConnected = NO;
 }
 
 
-- (void) didConnectToRoboRoach: (BOOL)success{
-    NSLog(@"didConnectToRoboRoach:success[%i]",success);
-    rr.activeRoboRoach.delegate = self;
+- (void) didConnectToOptoStimmer: (BOOL)success{
+    NSLog(@"didConnectToOptoStimmer:success[%i]",success);
+    rr.activeOptoStimmer.delegate = self;
     [stimulationSettingsButton setEnabled:YES];
     isConnected = YES;
 }
@@ -770,23 +770,23 @@ BOOL isConnected = NO;
 //===========================================================================================
 #pragma mark - Settings function
 
-//RoboRoach Delgate Methods
-- (void) roboRoachHasChangedSettings:(BYBOptoStimmer *)roboRoach{
+//OptoStimmer Delgate Methods
+- (void) optoStimmerHasChangedSettings:(BYBOptoStimmer *)optoStimmer{
     //Confusing Architecture.  Think about renaming it.
-    NSLog(@"roboRoachHasChangedSettings++");
+    NSLog(@"optoStimmerHasChangedSettings++");
     
     [bookmarkBar setSelectedSegmentIndex:5]; //Other
     //NSLog(@"Updated Bar");
     
     [self saveSettingsToLocalUserDefaults];
     
-    [rr sendUpdatedSettingsToActiveRoboRoach];
-    //NSLog(@"Finished sendUpdatedSettingsToActiveRoboRoach");
+    [rr sendUpdatedSettingsToActiveOptoStimmer];
+    //NSLog(@"Finished sendUpdatedSettingsToActiveOptoStimmer");
     
-    [stimulationSettings setText:[rr.activeRoboRoach getStimulationString]];
+    [stimulationSettings setText:[rr.activeOptoStimmer getStimulationString]];
     //NSLog(@"stimulationSettings Text Updated");
     
-    NSLog(@"roboRoachHasChangedSettings--");
+    NSLog(@"optoStimmerHasChangedSettings--");
     
 }
 
@@ -795,11 +795,11 @@ BOOL isConnected = NO;
 //
 -(void) saveSettingsToLocalUserDefaults
 {
-    [[NSUserDefaults standardUserDefaults] setObject:rr.activeRoboRoach.frequency forKey:FREQUENCY_IDENTIFIER];
-    [[NSUserDefaults standardUserDefaults] setObject:rr.activeRoboRoach.pulseWidth forKey:PULSE_LENGTH_IDENTIFIER];
-    [[NSUserDefaults standardUserDefaults] setObject:rr.activeRoboRoach.duration forKey:DURATION_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] setObject:rr.activeOptoStimmer.frequency forKey:FREQUENCY_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] setObject:rr.activeOptoStimmer.pulseWidth forKey:PULSE_LENGTH_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] setObject:rr.activeOptoStimmer.duration forKey:DURATION_IDENTIFIER];
     
-    [[NSUserDefaults standardUserDefaults] setObject:rr.activeRoboRoach.firmwareVersion forKey:LAST_FMW_VERSION_IDENTIFIER];
+    [[NSUserDefaults standardUserDefaults] setObject:rr.activeOptoStimmer.firmwareVersion forKey:LAST_FMW_VERSION_IDENTIFIER];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -813,7 +813,7 @@ BOOL isConnected = NO;
         lastFMWVersion = [[NSUserDefaults standardUserDefaults] stringForKey:LAST_FMW_VERSION_IDENTIFIER];
     }
     
-    if(![lastFMWVersion isEqualToString:@"unknown"] && [rr.activeRoboRoach.firmwareVersion isEqualToString:lastFMWVersion])
+    if(![lastFMWVersion isEqualToString:@"unknown"] && [rr.activeOptoStimmer.firmwareVersion isEqualToString:lastFMWVersion])
     {
         
         
@@ -821,25 +821,25 @@ BOOL isConnected = NO;
         if([[NSUserDefaults standardUserDefaults] objectForKey:FREQUENCY_IDENTIFIER])
         {
             float frequencyTemp = [[NSUserDefaults standardUserDefaults] floatForKey:FREQUENCY_IDENTIFIER];
-            rr.activeRoboRoach.frequency = [NSNumber numberWithFloat:frequencyTemp];
+            rr.activeOptoStimmer.frequency = [NSNumber numberWithFloat:frequencyTemp];
         }
         if([[NSUserDefaults standardUserDefaults] objectForKey:PULSE_LENGTH_IDENTIFIER])
         {
             float pulseLengthTemp = [[NSUserDefaults standardUserDefaults] floatForKey:PULSE_LENGTH_IDENTIFIER];
-            rr.activeRoboRoach.pulseWidth = [NSNumber numberWithFloat:pulseLengthTemp];
+            rr.activeOptoStimmer.pulseWidth = [NSNumber numberWithFloat:pulseLengthTemp];
         }
         if([[NSUserDefaults standardUserDefaults] objectForKey:DURATION_IDENTIFIER])
         {
             float durationTemp = [[NSUserDefaults standardUserDefaults] floatForKey:DURATION_IDENTIFIER];
-            rr.activeRoboRoach.duration = [NSNumber numberWithFloat:durationTemp];
+            rr.activeOptoStimmer.duration = [NSNumber numberWithFloat:durationTemp];
         }
     }
     else
     {
             //if we don't have firmware version just ignore saved parameters (if any) and set up default one
-            rr.activeRoboRoach.frequency = [NSNumber numberWithFloat:1.0f];
-            rr.activeRoboRoach.pulseWidth = [NSNumber numberWithFloat:100.0f];
-            rr.activeRoboRoach.duration = [NSNumber numberWithFloat:1000.0f];
+            rr.activeOptoStimmer.frequency = [NSNumber numberWithFloat:1.0f];
+            rr.activeOptoStimmer.pulseWidth = [NSNumber numberWithFloat:100.0f];
+            rr.activeOptoStimmer.duration = [NSNumber numberWithFloat:1000.0f];
     }
 
 }
@@ -916,39 +916,39 @@ BOOL isConnected = NO;
     
         switch( bookmarkBar.selectedSegmentIndex) {
             case 0: //5Hz
-                rr.activeRoboRoach.frequency = @5;
-                rr.activeRoboRoach.pulseWidth = @20;
-                rr.activeRoboRoach.duration = @600;
-                rr.activeRoboRoach.randomMode = @0;
+                rr.activeOptoStimmer.frequency = @5;
+                rr.activeOptoStimmer.pulseWidth = @20;
+                rr.activeOptoStimmer.duration = @600;
+                rr.activeOptoStimmer.randomMode = @0;
                 break;
             case 1: //15Hz
-                rr.activeRoboRoach.frequency = @15;
-                rr.activeRoboRoach.pulseWidth = @20;
-                rr.activeRoboRoach.duration = @600;
-                rr.activeRoboRoach.randomMode = @0;
+                rr.activeOptoStimmer.frequency = @15;
+                rr.activeOptoStimmer.pulseWidth = @20;
+                rr.activeOptoStimmer.duration = @600;
+                rr.activeOptoStimmer.randomMode = @0;
                 break;
             case 2: //30Hz
-                rr.activeRoboRoach.frequency = @30;
-                rr.activeRoboRoach.pulseWidth = @10;
-                rr.activeRoboRoach.duration = @600;
-                rr.activeRoboRoach.randomMode = @0;
+                rr.activeOptoStimmer.frequency = @30;
+                rr.activeOptoStimmer.pulseWidth = @10;
+                rr.activeOptoStimmer.duration = @600;
+                rr.activeOptoStimmer.randomMode = @0;
                 break;
             case 3: //55Hz
-                rr.activeRoboRoach.frequency = @55;
-                rr.activeRoboRoach.pulseWidth = @9;
-                rr.activeRoboRoach.duration = @600;
-                rr.activeRoboRoach.randomMode = @0;
+                rr.activeOptoStimmer.frequency = @55;
+                rr.activeOptoStimmer.pulseWidth = @9;
+                rr.activeOptoStimmer.duration = @600;
+                rr.activeOptoStimmer.randomMode = @0;
                 break;
             case 4: //100Hz
-                rr.activeRoboRoach.frequency = @100;
-                rr.activeRoboRoach.pulseWidth = @5;
-                rr.activeRoboRoach.duration = @600;
-                rr.activeRoboRoach.randomMode = @0;
+                rr.activeOptoStimmer.frequency = @100;
+                rr.activeOptoStimmer.pulseWidth = @5;
+                rr.activeOptoStimmer.duration = @600;
+                rr.activeOptoStimmer.randomMode = @0;
                 break;
         }
         
-    [rr sendUpdatedSettingsToActiveRoboRoach];
-    [stimulationSettings setText:[rr.activeRoboRoach getStimulationString]];
+    [rr sendUpdatedSettingsToActiveOptoStimmer];
+    [stimulationSettings setText:[rr.activeOptoStimmer getStimulationString]];
     
 }
 
@@ -956,13 +956,13 @@ BOOL isConnected = NO;
 {
     NSLog(@"prepareForSegue");
     // Make sure your segue name in storyboard is the same as this line
-    if ([[segue identifier] isEqualToString:@"roboRoachSettingsSegue"])
+    if ([[segue identifier] isEqualToString:@"optoStimmerSettingsSegue"])
     {
         // Get reference to the destination view controller
         BYBOptoStimmerSettingsViewController *vc = [segue destinationViewController];
         
         // Pass any objects to the view controller here, like...
-        vc.roboRoach = rr.activeRoboRoach;
+        vc.optoStimmer = rr.activeOptoStimmer;
     }
 }
 
@@ -989,21 +989,21 @@ BOOL isConnected = NO;
     
 }
 
-- (void) roboRoach: (BYBOptoStimmer *)roboRoach hasMovementCommand:(BYBMovementCommand) command{
+- (void) optoStimmer: (BYBOptoStimmer *)optoStimmer hasMovementCommand:(BYBMovementCommand) command{
     
     if (command == moveLeft){
         NSLog(@"Go Left");
         goLeft.hidden = NO;
         
-        [rr sendMoveCommandToActiveRoboRoach:moveLeft];
+        [rr sendMoveCommandToActiveOptoStimmer:moveLeft];
     } else if (command == moveRight){
         NSLog(@"Go Right");
         goRight.hidden = NO;
-        [rr sendMoveCommandToActiveRoboRoach:moveRight];
+        [rr sendMoveCommandToActiveOptoStimmer:moveRight];
         
     }
     
-    [NSTimer scheduledTimerWithTimeInterval:ROBOROACH_TURN_TIMEOUT target:self selector:@selector(sideIndicatorTimer:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:OPTOSTIMMER_TURN_TIMEOUT target:self selector:@selector(sideIndicatorTimer:) userInfo:nil repeats:NO];
 }
 
 - (IBAction)connectButtonClicked:(id)sender {
@@ -1014,10 +1014,10 @@ BOOL isConnected = NO;
      
      [connectBTN setEnabled:NO];
      
-     [rr searchForRoboRoaches:4];
+     [rr searchForOptoStimmeres:4];
      
      }else{
-     [rr disconnectFromRoboRoach];
+     [rr disconnectFromOptoStimmer];
      isConnected = NO;
      
      }*/
