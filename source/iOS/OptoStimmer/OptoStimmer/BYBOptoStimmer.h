@@ -47,7 +47,7 @@ typedef enum {
 @end
 
 
-@protocol BYBRoboRoachDelegate <NSObject>
+@protocol BYBOptoStimmerDelegate <NSObject>
 @required
 - (void) roboRoachHasChangedSettings:(BYBOptoStimmer *)roboRoach;
 - (void) roboRoach: (BYBOptoStimmer *)roboRoach hasMovementCommand:(BYBMovementCommand) command;

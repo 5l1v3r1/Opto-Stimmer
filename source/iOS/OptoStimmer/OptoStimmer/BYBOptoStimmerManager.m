@@ -11,7 +11,7 @@
 @implementation BYBOptoStimmerManager
 
 // delegate bookkeeping
-id <BYBRoboRoachManagerDelegate> delegate;
+id <BYBOptoStimmerManagerDelegate> delegate;
 - (id)delegate {
     return delegate;
 }

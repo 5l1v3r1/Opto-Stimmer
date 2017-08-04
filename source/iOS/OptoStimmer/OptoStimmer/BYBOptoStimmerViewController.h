@@ -13,7 +13,7 @@
 #import "BYBOptoStimmerSettingsViewController.h"
 #import "GPUImage.h"
 
-@interface BYBOptoStimmerViewController : UIViewController <BYBRoboRoachManagerDelegate, BYBRoboRoachDelegate, BYBSettingsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GPUImageMovieWriterDelegate>
+@interface BYBOptoStimmerViewController : UIViewController <BYBOptoStimmerManagerDelegate, BYBOptoStimmerDelegate, BYBSettingsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GPUImageMovieWriterDelegate>
 
 
     @property (nonatomic, strong) UIImagePickerController *cameraUI;

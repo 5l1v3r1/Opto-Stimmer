@@ -29,7 +29,7 @@
 #define DEVICE_INFO_CHAR_FIRMWARE_UUID 0x2A26
 
 
-@protocol BYBRoboRoachManagerDelegate <NSObject>
+@protocol BYBOptoStimmerManagerDelegate <NSObject>
 @required
 - (void) didSearchForRoboRoaches: (NSArray*)foundRoboRoaches;
 - (void) didConnectToRoboRoach: (BOOL)success;

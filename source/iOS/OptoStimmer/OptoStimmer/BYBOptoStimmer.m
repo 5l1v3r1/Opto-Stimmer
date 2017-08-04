@@ -24,7 +24,7 @@ bool turnCommandActive = NO;
 }
 
 // delegate bookkeeping
-id <BYBRoboRoachDelegate> delegate;
+id <BYBOptoStimmerDelegate> delegate;
 - (id)delegate {
     return delegate;
 }
@@ -34,7 +34,7 @@ id <BYBRoboRoachDelegate> delegate;
 }
 
 - (void) updateSettings {
-    NSLog(@"Updating RoboRoach Settings:");
+    NSLog(@"Updating OptoStimmer Settings:");
     NSLog(@"Random Mode: %@", self.randomMode);
     NSLog(@"Frequency: %@", self.frequency);
     NSLog(@"Pulse Width: %@", self.pulseWidth);

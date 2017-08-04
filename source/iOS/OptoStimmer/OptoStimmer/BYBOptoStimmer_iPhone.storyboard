@@ -36,10 +36,10 @@
             </objects>
             <point key="canvasLocation" x="486" y="-467"/>
         </scene>
-        <!--Robo Roach Settings View Controller-->
+        <!--Opto Stimmer Settings View Controller-->
         <scene sceneID="Kpd-Q9-oSb">
             <objects>
-                <viewController storyboardIdentifier="BYBRoboRoachSettingsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="yz8-Q6-r5r" customClass="BYBRoboRoachSettingsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BYBOptoStimmerSettingsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="yz8-Q6-r5r" customClass="BYBOptoStimmerSettingsViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fof-mV-Glj">
                         <rect key="frame" x="0.0" y="44" width="375" height="623"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
