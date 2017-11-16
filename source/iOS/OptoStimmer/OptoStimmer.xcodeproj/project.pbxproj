@@ -65,6 +65,7 @@
 		1C55112C1F33681200AFC968 /* stoprec.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C5510F21F33681200AFC968 /* stoprec.png */; };
 		1C55112D1F33681200AFC968 /* stoprec@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C5510F31F33681200AFC968 /* stoprec@2x.png */; };
 		1C55EE5D1F335B8B00AFC968 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C55EE5C1F335B8B00AFC968 /* libz.tbd */; };
+		1CC365371FBDC6D400CDD7A0 /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CC365361FBDC6D400CDD7A0 /* iTunesArtwork@2x.png */; };
 		240E26121A0A2CCD00B2003A /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 240E26111A0A2CCD00B2003A /* CoreVideo.framework */; };
 		240E26141A0A2CE400B2003A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 240E26131A0A2CE400B2003A /* CoreMedia.framework */; };
 		240E26161A0A2CFB00B2003A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 240E26151A0A2CFB00B2003A /* MobileCoreServices.framework */; };
@@ -173,6 +174,7 @@
 		1C5510F21F33681200AFC968 /* stoprec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stoprec.png; sourceTree = "<group>"; };
 		1C5510F31F33681200AFC968 /* stoprec@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stoprec@2x.png"; sourceTree = "<group>"; };
 		1C55EE5C1F335B8B00AFC968 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		1CC365361FBDC6D400CDD7A0 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		240E26111A0A2CCD00B2003A /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		240E26131A0A2CE400B2003A /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		240E26151A0A2CFB00B2003A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -259,6 +261,7 @@
 		1C5510C11F33681200AFC968 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1CC365361FBDC6D400CDD7A0 /* iTunesArtwork@2x.png */,
 				1C5510C31F33681200AFC968 /* background.png */,
 				1C5510C41F33681200AFC968 /* battery-0.png */,
 				1C5510C51F33681200AFC968 /* battery-25.png */,
@@ -495,6 +498,7 @@
 				1C55111C1F33681200AFC968 /* Icon-Small.png in Resources */,
 				243244E31A819E1300FA1FB1 /* Screenshot-568h.png in Resources */,
 				1C5510F61F33681200AFC968 /* BYBOptoStimmer_iPhone.storyboard in Resources */,
+				1CC365371FBDC6D400CDD7A0 /* iTunesArtwork@2x.png in Resources */,
 				1C5510FE1F33681200AFC968 /* background.png in Resources */,
 				1C55110B1F33681200AFC968 /* configuration@2x.png in Resources */,
 				1C5511021F33681200AFC968 /* battery-80.png in Resources */,
